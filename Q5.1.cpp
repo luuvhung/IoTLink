@@ -20,7 +20,7 @@ int main()
 	*ptr_b = *ptr_a;//gia tri tai dia chi ptr_b tro toi = gia tri tai dia chi ptr_a tro toi = 3
 	cout << *ptr_a << " " << *ptr_b << "\n";//xuat ra gia tri tai dia chi ptr_a va ptr_b tro toi
 
-	delete ptr_a;//xoa ptr_a
+	delete ptr_a;//giai phong bo nho cap phat dong
 	ptr_a = ptr_b;
 	cout << *ptr_a << " " << *&*&*&*&*ptr_b << "\n";//&*ptr_b=ptr_b =>*&*&*&*&*ptr_b = *ptr_b
 
