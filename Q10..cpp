@@ -1,4 +1,6 @@
 #include <iostream>
+#include <typeinfo>
+#include<string.h>
 using namespace std;
 struct Date
 {
@@ -21,10 +23,24 @@ public:
     static int count;
     People()
     {
+        name = new char[10];
         count++;
+    }
+    People(People *p)
+    {
+        strcpy(name,p->name);
+        birthday = p->birthday;
+        idCode = p->idCode;
+    }
+    virtual ~People()
+    {
+        delete[] name;
+        cout<<"delete People"<<endl;
+        count--;
     }
     virtual void printInfo()
     {
+        cout<<"-------------------"<<endl;
         cout << "Name: " << name << endl;
         cout << "Birthday: " << birthday.day << "/" << birthday.month << "/" << birthday.year << endl;
         cout << "ID code: " << idCode << endl;
@@ -35,7 +51,7 @@ public:
     }
     void setName(char *name)
     {
-        this->name = name;
+        strcpy(this->name,name);
     }
     Date getBirthday()
     {
@@ -68,6 +84,20 @@ public:
     Staff()
     {
         count++;
+    }
+    Staff(Staff *stf)
+    {
+        strcpy(name,stf->name);
+        birthday = stf->birthday;
+        idCode = stf->idCode;
+        departmentId = stf->departmentId;
+        joinedDate = stf->joinedDate;
+        level = stf->level;
+    }
+    virtual ~Staff()
+    {
+        cout<<"delete staff"<<endl;
+        count--;
     }
     virtual void printInfo()
     {
@@ -125,6 +155,22 @@ public:
     {
         count++;
     }
+    Student(Student *st)
+    {
+        strcpy(name,st->name);
+        birthday = st->birthday;
+        idCode = st->idCode;
+        grade = st->grade;
+        numOfProject = st->numOfProject;
+        scoreProject = new float[numOfProject];
+        memcpy(scoreProject,st->scoreProject,sizeof(float)*numOfProject);
+    }
+    ~Student()
+    {
+        delete[] scoreProject;
+        cout<<"delete student"<<endl;
+        count--;
+    }
     void printInfo()
     {
         People::printInfo();
@@ -176,6 +222,23 @@ public:
     {
         count++;
     }
+    Teacher(Teacher *tc)
+    {
+        strcpy(name,tc->name);
+        birthday = tc->birthday;
+        idCode = tc->idCode;
+        departmentId = tc->departmentId;
+        joinedDate = tc->joinedDate;
+        level = tc->level;
+        Class = tc->Class;
+        subject = tc->subject;
+        secondSubject = tc->secondSubject;
+    }
+    ~Teacher()
+    {
+        cout<<"delete teacher"<<endl;
+        count--;
+    }
     void printInfo()
     {
         Staff::printInfo();
@@ -213,7 +276,7 @@ class Node
     public:
         People* data;
         Node* next;
-        static Node *addElement(Node* head,People *data)
+        static void *addElement(Node* &head,People *data)
         {
             Node *temp = new Node;
             temp->next = NULL;
@@ -225,7 +288,26 @@ class Node
                 temp->next = head;
                 head = temp;
             }
-            return temp;
+            //return temp;
+        }
+        static void removeElement(Node* &head, Node* i)
+        {
+            if (i==head) head = i->next;
+            else
+            {
+                Node *temp;
+                for (Node* j= head;j!=i;j = j->next)
+                {
+                    if (j->next=i) temp = j;
+                }
+                temp->next = i->next;
+            }
+            delete i;
+        }
+        ~Node()
+        {
+            cout<<"delete node"<<endl;
+            delete data;
         }
 };
 void input(Node *&head)
@@ -244,7 +326,7 @@ void input(Node *&head)
         {
         case 1:
         {
-            char *name = new char[10];
+            char name[10];
             Student *st = new Student;
             cout << "Name: ";
             cin >> name;
@@ -272,12 +354,12 @@ void input(Node *&head)
                 cin >> score[i];
             }
             st->setScoreProject(score);
-            head = Node::addElement(head,st);
+            Node::addElement(head,st);
             break;
         }
         case 2:
         {
-            char *name = new char[10];
+            char name[10];
             Staff *stf = new Staff;
             cout << "Name: ";
             cin >> name;
@@ -301,12 +383,12 @@ void input(Node *&head)
             cout<<"Level: ";
             cin>>level;
             stf->setLevel(level);
-            head = Node::addElement(head,stf);
+            Node::addElement(head,stf);
             break;
         }
         case 3:
         {
-            char *name = new char[10];
+            char name[10];
             Teacher *tc = new Teacher;
             cout << "Name: ";
             cin >> name;
@@ -339,7 +421,7 @@ void input(Node *&head)
             cin>>subject>>secondSubject;
             tc->setSubject((subjects)subject);
             tc->setSecondSubject((subjects)secondSubject);
-            head = Node::addElement(head,tc);
+            Node::addElement(head,tc);
             break;
         }  
         case 4:
@@ -355,6 +437,59 @@ void printList(Node *head)
         i->data->printInfo();
     }
 }
+void swap(Node *x, Node *y)
+{
+    Node *temp;
+    temp->data = x->data;
+    x->data = y->data;
+    y->data = temp->data;
+}
+void sort(Node *head)
+{
+    for (Node *i=head;i!=NULL;i=i->next)
+    {
+        for (Node *j = i->next; j != NULL; j = j->next)
+        {
+            if (dynamic_cast<Student*>(i->data)&&dynamic_cast<Staff*>(j->data)) swap(i,j);
+            if (dynamic_cast<Teacher*>(i->data)&&dynamic_cast<Staff*>(j->data)&&!dynamic_cast<Teacher*>(j->data)) swap(i,j);
+        }
+    }
+}
+void printStudent(Node *head)
+{
+    for (Node *i=head;i!=NULL;i=i->next)
+    {
+        if(dynamic_cast<Student*>(i->data))
+        {
+            Student *st;
+            st = (Student*)i->data;
+            if(st->getCalAvgScore()>5) st->printInfo(); 
+        }
+    }
+}
+Node *cloneNode(Node *head,Node *node)
+{
+    for (Node *i = node;i!=NULL;i = i->next)
+    {
+        if (dynamic_cast<Student*>(i->data))
+        {
+            Student *st = new Student((Student *)i->data);
+            Node::addElement(head,st);
+        }
+        else if(dynamic_cast<Teacher*>(i->data))
+        {
+            Teacher *tc = new Teacher((Teacher *)i->data);
+            Node::addElement(head,tc);
+        }
+        else
+        {
+            Staff *st =  new Staff((Staff *)i->data);
+            Node::addElement(head,st);
+        }
+    }
+    return head;
+
+}
 int People::count = 0;  //do static là biến dùng chung nên không thuộc 1 đối tượng nào
 int Staff::count = 0;   //nên không thể khởi tạo trong hàm contructor của class được
 int Student::count = 0; //phải khởi tạo bên ngoài
@@ -362,11 +497,18 @@ int Teacher::count = 0;
 int main()
 {
     Node *head = NULL;
+    Node *clone = NULL;
     input(head);
+    sort(head);
     printList(head);
-    cout << People::count;
-    cout << Staff::count;
-    cout << Student::count;
-    cout << Teacher::count;
+    cout<<endl<<"Danh sach hoc sinh co diem trung binh lon hon 5: "<<endl;
+    printStudent(head);
+    cout <<endl<<"Num of People: "<<People::count<<endl;
+    cout <<"Num of Staff: "<<Staff::count<<endl;
+    cout <<"Num of Student: "<<Student::count<<endl;
+    cout <<"Num of Teacher: "<<Teacher::count<<endl;
+    Node::removeElement(head,head);
+    clone = cloneNode(clone,head);
+    printList(clone);
     system("pause");
 }
