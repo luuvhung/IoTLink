@@ -276,19 +276,23 @@ class Node
     public:
         People* data;
         Node* next;
-        static void *addElement(Node* &head,People *data)
+        static void addElement(Node* &head,People *data)
         {
-            Node *temp = new Node;
-            temp->next = NULL;
-            temp->data = data;
+            Node *temp1 = new Node;
+            Node *temp2;
+            temp1->next = NULL;
+            temp1->data = data;
             if (head==NULL)
-                head = temp;
+                head = temp1;
             else
             {
-                temp->next = head;
-                head = temp;
+                temp2 = head;
+                while(temp2->next!=NULL)
+                {
+                    temp2 = temp2->next;
+                }
+                temp2->next = temp1;
             }
-            //return temp;
         }
         static void removeElement(Node* &head, Node* i)
         {
@@ -332,8 +336,8 @@ void input(Node *&head)
             cin >> name;
             st->setName(name);
             int day, month, year;
-            cout << "Birthday: ";
-            cin >> day >> month >> year;
+            cout << "Birthday(day,month,year): ";
+            cin >> day>> month >> year;
             st->setBirthday(day,month,year);
             int idCode;
             cout << "ID code: ";
@@ -365,8 +369,8 @@ void input(Node *&head)
             cin >> name;
             stf->setName(name);
             int day, month, year;
-            cout << "Birthday: ";
-            cin >> day >> month >> year;
+            cout << "Birthday(day,month,year): ";
+            cin >> day>> month >> year;
             stf->setBirthday(day,month,year);
             int idCode;
             cout << "ID code: ";
@@ -376,7 +380,7 @@ void input(Node *&head)
             cout<<"Department ID: ";
             cin>>departmentId;
             stf->setDepartmentId(departmentId);
-            cout<<"Joined Day: ";
+            cout<<"Joined Day(day,month,year): ";
             cin>>day>>month>>year;
             stf->setJoinedDate(day,month,year);
             int level;
@@ -394,8 +398,8 @@ void input(Node *&head)
             cin >> name;
             tc->setName(name);
             int day, month, year;
-            cout << "Birthday: ";
-            cin >> day >> month >> year;
+            cout << "Birthday(day,month,year): ";
+            cin >> day>> month >> year;
             tc->setBirthday(day,month,year);
             int idCode;
             cout << "ID code: ";
@@ -405,7 +409,7 @@ void input(Node *&head)
             cout<<"Department ID: ";
             cin>>departmentId;
             tc->setDepartmentId(departmentId);
-            cout<<"Joined Day: ";
+            cout<<"Joined Day(day,month,year): ";
             cin>>day>>month>>year;
             tc->setJoinedDate(day,month,year);
             int level;
@@ -467,27 +471,27 @@ void printStudent(Node *head)
         }
     }
 }
-Node *cloneNode(Node *head,Node *node)
+Node *cloneList(Node *node,Node *list)
 {
-    for (Node *i = node;i!=NULL;i = i->next)
+    for (Node *i = list;i!=NULL;i = i->next)
     {
         if (dynamic_cast<Student*>(i->data))
         {
             Student *st = new Student((Student *)i->data);
-            Node::addElement(head,st);
+            Node::addElement(node,st);
         }
         else if(dynamic_cast<Teacher*>(i->data))
         {
             Teacher *tc = new Teacher((Teacher *)i->data);
-            Node::addElement(head,tc);
+            Node::addElement(node,tc);
         }
         else
         {
             Staff *st =  new Staff((Staff *)i->data);
-            Node::addElement(head,st);
+            Node::addElement(node,st);
         }
     }
-    return head;
+    return node;
 
 }
 int People::count = 0;  //do static là biến dùng chung nên không thuộc 1 đối tượng nào
@@ -498,17 +502,17 @@ int main()
 {
     Node *head = NULL;
     Node *clone = NULL;
-    input(head);
-    sort(head);
-    printList(head);
+    input(head);//add cac phan tu vao list
+    sort(head);//sap xep dau staff, giua teacher, cuoi student
+    printList(head);//in ra list
     cout<<endl<<"Danh sach hoc sinh co diem trung binh lon hon 5: "<<endl;
-    printStudent(head);
+    printStudent(head);//in ra danh sach sinh vien co diem tb > 5
     cout <<endl<<"Num of People: "<<People::count<<endl;
     cout <<"Num of Staff: "<<Staff::count<<endl;
     cout <<"Num of Student: "<<Student::count<<endl;
     cout <<"Num of Teacher: "<<Teacher::count<<endl;
-    Node::removeElement(head,head);
-    clone = cloneNode(clone,head);
-    printList(clone);
+    Node::removeElement(head,head->next);//xoa 1 node
+    clone = cloneList(clone,head);//sao chep 1 list
+    printList(clone);//in ra list
     system("pause");
 }
