@@ -19,7 +19,7 @@ public:
 	List();
 	~List();
 	void addElement(int);
-	void insertElement(int,int);
+	void insertElement(int, int);
 	void delElement(int);
 	void printList();
 	int searchElement(int);
@@ -112,49 +112,47 @@ void List::addElement(int data) {
 		tail = temp;
 	}
 }
-void List::insertElement(int data,int index) {
-	Node* temp;
+void List::insertElement(int data, int index) {
 	if (index == 0) {
-		temp = new Node(data);
-		temp->next = head;
-		head = temp;
-		if (temp->next == nullptr) tail = temp;//nếu phần tử được chèn vào vị trí cuối=>cập nhật lại tail
+		Node* temp = new Node(data);
+		if (head == nullptr) head = tail = temp;
+		else {
+			temp->next = head;
+			head = temp;
+		}
 	}
 	else {
-		Node* p = head;
-		int i = 1;
-		while (i < index && p != nullptr) {
-			i++;
-			p = p->next;
-		}
-		if (p != nullptr) {
-			temp = new Node(data);
-			temp->next = p->next;
-			p->next = temp;
-			if (temp->next == nullptr) tail = temp;//nếu phần tử được chèn vào vị trí cuối=>cập nhật lại tail
+		int previous = 0;
+		for (Node* p = head; p != nullptr; p = p->next) {
+			if (previous == index - 1) {
+				Node* temp = new Node(data);
+				temp->next = p->next;
+				p->next = temp;
+				if (temp->next == nullptr) tail = temp;//nếu phần tử được thêm vào cuối thì cập nhật lại tail;
+				break;
+			}
+			previous++;
 		}
 	}
 }
 void List::delElement(int index) {
-	Node* temp;
 	if (head != nullptr) {
 		if (index == 0) {
-			temp = head;
+			Node* temp = head;
 			head = head->next;
 			delete temp;
 		}
 		else {
-			Node* p = head;
-			int i = 1;
-			while (i < index && p->next != nullptr) {
-				i++;
-				p = p->next;
-			}
-			if (p->next != nullptr) {
-				temp = p->next;
-				p->next = p->next->next;
-				delete temp;
-				if (p->next == nullptr) tail = p;//nếu phần tử bị xóa là phần tử cuối=>cập nhật lại tail
+			int previous = 0;
+			for (Node* p = head; p->next != nullptr; p = p->next) {
+				if (previous == index - 1) {
+					Node* temp = p->next;
+					p->next = temp->next;
+					if (temp->next == nullptr) tail = p;//nếu xóa phần tử cuối thì cập nhật lại tail
+					delete temp;
+					break;
+				}
+				previous++;
 			}
 		}
 	}
@@ -168,8 +166,10 @@ int List::searchElement(int data) {
 	return -1;
 }
 void List::printList() {
+	int index = 0;
 	for (Node* p = head; p != nullptr; p = p->next) {
-		cout << p->data << " ";
+		cout << "Phan tu "<< index <<": " << p->data << endl;
+		index++;
 	}
 }
 List::~List() {

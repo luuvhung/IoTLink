@@ -1,4 +1,4 @@
-﻿#include<iostream>
+#include<iostream>
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
@@ -115,39 +115,41 @@ void List::addElement(int data) {
 		tail = temp;
 	}
 }
-void List::insertElement(int data,int index) {
-	shared_ptr<Node> temp = make_shared<Node>(data);
+void List::insertElement(int data, int index) {
 	if (index == 0) {
-		temp->next = head;
-		head = temp;
+		shared_ptr<Node> temp = make_shared<Node>(data);
+		if (head == nullptr) head = tail = temp;
+		else {
+			temp->next = head;
+			head = temp;
+		}
 	}
 	else {
-		shared_ptr<Node> p = head;
-		int i = 1;
-		while (i < index && p != nullptr) {
-			i++;
-			p = p->next;
-		}
-		if (p != nullptr) {
-			temp->next = p->next;
-			p->next = temp;
+		int previous = 0;
+		for (shared_ptr<Node> p = head; p != nullptr; p = p->next) {
+			if (previous == index - 1) {
+				shared_ptr<Node> temp = make_shared<Node>(data);
+				temp->next = p->next;
+				p->next = temp;
+				if (temp->next == nullptr) tail = temp;
+				break;
+			}
+			previous++;
 		}
 	}
-	if (temp->next == nullptr) tail = temp;//nếu phần tử được chèn vào vị trí cuối
 }
 void List::delElement(int index) {
 	if (head != nullptr) {
 		if (index == 0) head = head->next;
 		else {
-			shared_ptr<Node> p = head;
-			int i = 1;
-			while (i < index && p->next != nullptr) {
-				i++;
-				p = p->next;
-			}
-			if (p->next != nullptr) {
-				p->next = p->next->next;
-				if (p->next == nullptr) tail = p;//nếu xóa phần tử cuối cùng
+			int previous = 0;
+			for (shared_ptr<Node> p = head; p->next != nullptr; p = p->next) {
+				if (previous == index - 1) {
+					p->next = p->next->next;
+					if (p->next == nullptr) tail = p;
+					break;
+				}
+				previous++;
 			}
 		}
 	}
@@ -161,7 +163,9 @@ int List::searchElement(int data) {
 	return -1;
 }
 void List::printList() {
+	int index = 0;
 	for (shared_ptr<Node> p = head; p != nullptr; p = p->next) {
-		cout << p->data << " ";
+		cout << "Phan tu " << index << ": " << p->data << endl;
+		index++;
 	}
 }
