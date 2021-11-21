@@ -55,44 +55,44 @@ BTree::BTree() {
 
 BTree::~BTree() {
 }
-void BTree::addElement(shared_ptr<Node>& leaf, int data) {
-	if (leaf == nullptr) {
+void BTree::addElement(shared_ptr<Node>& node, int data) {
+	if (node == nullptr) {
 		shared_ptr<Node> temp = make_shared<Node>(data);
-		leaf = temp;
+		node = temp;
 	}
-	else if (data > leaf->data) addElement(leaf->right, data);
-	else if (data < leaf->data) addElement(leaf->left, data);
+	else if (data > node->data) addElement(node->right, data);
+	else if (data < node->data) addElement(node->left, data);
 }
 void BTree::addElement(int data) {
 	addElement(root, data);
 }
 
-void BTree::printLNR(shared_ptr<Node> leaf) {//left node right
-	if (leaf != nullptr) {
-		printLNR(leaf->left);
-		cout << leaf->data << " ";
-		printLNR(leaf->right);
+void BTree::printLNR(shared_ptr<Node> node) {//left node right
+	if (node != nullptr) {
+		printLNR(node->left);
+		cout << node->data << " ";
+		printLNR(node->right);
 	}
 }
 void BTree::printLNR() {
 	printLNR(root);
 }
 
-shared_ptr<Node> BTree::leftMost(shared_ptr<Node> leaf) {
-	while (leaf->left != nullptr) leaf = leaf->left;
-	return leaf;
+shared_ptr<Node> BTree::leftMost(shared_ptr<Node> node) {
+	while (node->left != nullptr) node = node->left;
+	return node;
 }
-void BTree::delElement(shared_ptr<Node>& leaf, int data) {
-	if (leaf != nullptr) {
-		if (data < leaf->data) delElement(leaf->left, data);
-		else if (data > leaf->data) delElement(leaf->right, data);
+void BTree::delElement(shared_ptr<Node>& node, int data) {
+	if (node != nullptr) {
+		if (data < node->data) delElement(node->left, data);
+		else if (data > node->data) delElement(node->right, data);
 		else {
-			if (leaf->left == nullptr) leaf = leaf->right;
-			else if (leaf->right == nullptr) leaf = leaf->left;
+			if (node->left == nullptr) node = node->right;
+			else if (node->right == nullptr) node = node->left;
 			else {
-				shared_ptr<Node> p = leftMost(leaf->right);
-				leaf->data = p->data;
-				delElement(leaf->right, p->data);
+				shared_ptr<Node> p = leftMost(node->right);
+				node->data = p->data;
+				delElement(node->right, p->data);
 			}
 		}
 	}
@@ -100,21 +100,21 @@ void BTree::delElement(shared_ptr<Node>& leaf, int data) {
 void BTree::delElement(int data) {
 	delElement(root, data);
 }
-shared_ptr<Node> BTree::searchElement(shared_ptr<Node> leaf, int data) {
-	if (leaf != nullptr) {
-		if (data > leaf->data) return searchElement(leaf->right, data);
-		else if (data < leaf->data) return searchElement(leaf->left, data);
-		else return leaf;
+shared_ptr<Node> BTree::searchElement(shared_ptr<Node> node, int data) {
+	if (node != nullptr) {
+		if (data > node->data) return searchElement(node->right, data);
+		else if (data < node->data) return searchElement(node->left, data);
+		else return node;
 	}
 	return nullptr;
 }
 shared_ptr<Node> BTree::searchElement(int data) {
-	shared_ptr<Node> leaf = searchElement(root, data);
-	if (leaf == nullptr) cout << "Khong tim thay";
+	shared_ptr<Node> node = searchElement(root, data);
+	if (node == nullptr) cout << "Khong tim thay";
 	else {
 		cout << "Da tim thay";
 	}
-	return leaf;
+	return node;
 }
 void menu(BTree& btree) {
 	bool check = true;

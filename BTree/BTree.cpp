@@ -53,55 +53,55 @@ Node::~Node() {}
 BTree::BTree() {
 	root = nullptr;
 }
-void BTree::cleanTree(Node*& leaf) {
-	if (leaf != nullptr) {
-		cleanTree(leaf->left);
-		cleanTree(leaf->right);
-		delete(leaf);
+void BTree::cleanTree(Node*& node) {
+	if (node != nullptr) {
+		cleanTree(node->left);
+		cleanTree(node->right);
+		delete(node);
 	}
 }
 BTree::~BTree() {
 	cleanTree(root);
 }
-void BTree::addElement(Node* &leaf,int data) {
-	if (leaf == nullptr) {
+void BTree::addElement(Node* &node,int data) {
+	if (node == nullptr) {
 		Node* temp = new Node(data);
-		leaf = temp;
+		node = temp;
 	}
-	else if (data > leaf->data) addElement(leaf->right, data);
-	else if (data < leaf->data) addElement(leaf->left, data);
+	else if (data > node->data) addElement(node->right, data);
+	else if (data < node->data) addElement(node->left, data);
 }
 void BTree::addElement(int data) {
 	addElement(root, data);
 }
 
-void BTree::printLNR(Node* leaf) {
-	if (leaf != nullptr) {
-		printLNR(leaf->left);
-		cout << leaf->data << " ";
-		printLNR(leaf->right);
+void BTree::printLNR(Node* node) {
+	if (node != nullptr) {
+		printLNR(node->left);
+		cout << node->data << " ";
+		printLNR(node->right);
 	}
 }
 void BTree::printLNR() {
 	printLNR(root);
 }
 
-Node* BTree::leftMost(Node* leaf) {
-	while (leaf->left != nullptr) leaf = leaf->left;
-	return leaf;
+Node* BTree::leftMost(Node* node) {
+	while (node->left != nullptr) node = node->left;
+	return node;
 }
-void BTree::delElement(Node* &leaf, int data) {
-	if (leaf != nullptr) {
-		if (data < leaf->data) delElement(leaf->left, data);
-		else if (data > leaf->data) delElement(leaf->right, data);
+void BTree::delElement(Node* &node, int data) {
+	if (node != nullptr) {
+		if (data < node->data) delElement(node->left, data);
+		else if (data > node->data) delElement(node->right, data);
 		else {
-			Node* temp = leaf;
-			if (leaf->left == nullptr) leaf = leaf->right;
-			else if (leaf->right == nullptr) leaf = leaf->left;
+			Node* temp = node;
+			if (node->left == nullptr) node = node->right;
+			else if (node->right == nullptr) node = node->left;
 			else {
-				Node* p = leftMost(leaf->right);
-				leaf->data = p->data;
-				delElement(leaf->right, p->data);
+				Node* p = leftMost(node->right);
+				node->data = p->data;
+				delElement(node->right, p->data);
 			}
 			delete temp;
 		}
@@ -110,21 +110,21 @@ void BTree::delElement(Node* &leaf, int data) {
 void BTree::delElement(int data) {
 	delElement(root, data);
 }
-Node* BTree::searchElement(Node* leaf, int data) {
-	if (leaf != nullptr) {
-		if (data > leaf->data) return searchElement(leaf->right, data);
-		else if (data < leaf->data) return searchElement(leaf->left, data);
-		else return leaf;
+Node* BTree::searchElement(Node* node, int data) {
+	if (node != nullptr) {
+		if (data > node->data) return searchElement(node->right, data);
+		else if (data < node->data) return searchElement(node->left, data);
+		else return node;
 	}
 	return nullptr;
 }
 Node* BTree::searchElement(int data) {
-	Node* leaf = searchElement(root, data);
-	if (leaf == nullptr) cout << "Khong tim thay";
+	Node* node = searchElement(root, data);
+	if (node == nullptr) cout << "Khong tim thay";
 	else {
 		cout << "Da tim thay";
 	}
-	return leaf;
+	return node;
 }
 void menu(BTree &btree){
 	bool check = true;
