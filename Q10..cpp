@@ -1,6 +1,7 @@
 #include <iostream>
 #include <typeinfo>
 #include<string.h>
+#include<fstream>
 using namespace std;
 struct Date
 {
@@ -492,7 +493,28 @@ Node *cloneList(Node *node,Node *list)
         }
     }
     return node;
-
+}
+void saveListStudent(Node *list)
+{
+    ofstream outfile;
+    outfile.open("test.dat");
+    for (Node *i = list;i!=NULL;i = i->next)
+    {
+        if (dynamic_cast<Student*>(i->data))
+        {
+            Student *a = (Student *)(i->data);
+            outfile<<a->getName()<<a->getBirthday().day<<a->getBirthday().month
+                   <<a->getBirthday().year<<a->getIdCode()<<a->getGrade()
+                   <<a->getNumOfProject();
+            for (int i=0;i<a->getNumOfProject();i++)
+                outfile<<a->getScoreProject()[i];
+        }
+    }
+    outfile.close();
+}
+void loadListStudent(Node *list)
+{
+    
 }
 int People::count = 0;  //do static là biến dùng chung nên không thuộc 1 đối tượng nào
 int Staff::count = 0;   //nên không thể khởi tạo trong hàm contructor của class được
@@ -511,8 +533,23 @@ int main()
     cout <<"Num of Staff: "<<Staff::count<<endl;
     cout <<"Num of Student: "<<Student::count<<endl;
     cout <<"Num of Teacher: "<<Teacher::count<<endl;
-    Node::removeElement(head,head->next);//xoa 1 node
+    //Node::removeElement(head,head->next);//xoa 1 node
     clone = cloneList(clone,head);//sao chep 1 list
     printList(clone);//in ra list
+    //saveListStudent(clone);
+    Node *i=head;
+    while(i!=NULL)
+    {
+        i = i->next;
+        Node::removeElement(head,head);
+        head = i;
+    }
+    i = clone;
+    while(i!=NULL)
+    {
+        i = i->next;
+        Node::removeElement(clone,clone);
+        clone = i;
+    }
     system("pause");
 }
